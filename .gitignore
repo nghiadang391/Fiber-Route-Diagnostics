@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Compiled files
+dist/
+
+# Local databases and diagnostic history
+diagnostics_db.json
+
+# FNN Node runtime directories and RocksDB state folders under bin/ (but keep binaries)
+bin/testnet_node*/
+bin/node_*/
+bin/fiber/
+bin/node_a/
+bin/node_b/
+bin/testnet_node/
+bin/testnet_node_a/
+bin/testnet_node_b/
+bin/testnet_node_c/
+bin/testnet_node_d/
+*.log
+*.sst
+LOCK
+CURRENT
+MANIFEST-*
+LOG*
+OPTIONS-*
+
+# IDEs and OS files
+.DS_Store
+.vscode/

@@ -1,0 +1,6 @@
+fiber:
+  listening_addr: "/ip4/127.0.0.1/tcp/8228"
+  chain: testnet
+  rpc_listening_addr: "127.0.0.1:8227"
+  bootnode_addrs:
+    - "/ip4/54.179.226.154/tcp/8228/p2p/Qmes1EBD4yNo9Ywkfe6eRw9tG1nVNGLDmMud1xJMsoYFKy"
