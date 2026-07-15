@@ -1,0 +1,826 @@
+[
+  {
+    "payment_hash": "0xc1c0addb11fd1aeae9a87daec3ea6f3e701dbb0f4009522eb031430d77b57a3f",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vkgrxm77uvl6ec8q06vp52dkrq5jr0ykqjxh0wvh26upph4jt0x34l3p9e7ynmsxpp8wksgeayxe5fhlz8yeasrz2x9knksn9ccveh0zgg3ugwapad2s4s22p8tgy28y9yeag6gxamr7fh5x0mx6knkc48al974cku0pp7se4dnxsly85qhzdpk92qkv3p9k5fgwm2874m9wajenjffp0ghpr5ze7sm0zusgvsvs5ygs5qauj4d44f5unuv5gypku8pusmsr99mf6800k36nkam8kxu8syjmvmnsz2g5p23yfnxkv26rky3v4leh946597luya6x5rvr7afg3cqtwjeln",
+    "amount_ckb": 0.24414062,
+    "status": "Success",
+    "created_at": 1784098405922,
+    "fee_ckb": 0.00024415,
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0xc1c0addb11fd1aeae9a87daec3ea6f3e701dbb0f4009522eb031430d77b57a3f"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Success",
+        "payment_hash": "0xc1c0addb11fd1aeae9a87daec3ea6f3e701dbb0f4009522eb031430d77b57a3f"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Success",
+        "payment_hash": "0xc1c0addb11fd1aeae9a87daec3ea6f3e701dbb0f4009522eb031430d77b57a3f"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784098402899",
+    "invoice_address": "fibt244140621pc5av2wesezgfw0pnm6vka0qkdmw9gcrwltl209g9rfgjje8cnzte6csmagfxq97h3r6u0sgs68s0hjwf7f76d388cjs02sphd4mc6eeyqqyaw4uu4m88ktdx2a9k964z7t6073y5ascdq8gw6crmz0pt9h2g5xl3fl9tczq3nkmdjx3s34zj67nsvzxqe8eq0aw8zc7j8ugvsv5v6d06r4r7dce2jxhws3f60tsdn9pwmtl4v27ka0z3tduqms4ngamwvzk40h0duj9t04mm26vk4r3ev7zu3vk6k9n0cfyzcg8xqawgymufk9wnz573wrmf9d3nga48h4qr37q7hfew7wa5zvqpn5spdtw5qq",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784098402901,
+    "error_raw": "InvalidParameter: Failed to validate payment request: \"invoice is expired\"",
+    "error_code": "ExpiryTooSoon",
+    "diagnostic_msg": "The payment invoice has expired or the TLC lock time expiry is too small. Either the invoice was generated too long ago, or your FNN node's block height is out of sync with the testnet tip. Generate a fresh invoice and retry.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784098402899"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098402899"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098402899"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784098116383",
+    "invoice_address": "fibt11peg6u5d34cwgfw0pmm6vk8e0zmssa2tq5mtuw0pwfandg6cpm2wy796xs5rzlzl96mmn96d3k5l4hqlzjq9x3plfew8nv6sk9sjmqdul356enwqyu4q9xuggtejfy6n8f6gk9jfsjdgwwk3e6cy3xcp3kqpv5xr4v0clw75m9j4089tk3yhvm4w3xvp9lm4u3g56nnp99uwllkecwq2ryagne4chagnx8emr0kh3z979h55m9rvjayxj424zf84dczqfktnw5j0gcllcfvh4wy6g3wcefrpam7metp7dw3aj9fllfda3vnn346w8epcuq9w0l5kk60cn5pcmwh3pyfvx0mmckwr99lt3qkss3gpvsn0gq",
+    "amount_ckb": 1e-8,
+    "status": "Failed",
+    "created_at": 1784098116384,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 0 is insufficient, required amount: 1",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 0.00 CKB, but this payment requires 0.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784098116383"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098116383"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098116383"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784098106362",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vhrcqh9rnhu3rtnhfcvqnh49zhdpwrtr433adjytz04gxk492fxvy92nxje47krj7va7w9f5fmm85a69yt45szpvgtwsjrcmk0vjzys4syrgpnh82cdmzal55qdmgv96ethf56fhg7y3sa896vqfsezjwm3qr7gfckacauqmwyf97ae63g6qdfm2z4lcmt4h9r3x42ledg7nqsp86vzrdf58s7j98khzxqdxk3sx3k4hqxuqvaj8j8khfgaw3ntkc5e2jvdk45kkn6kvh9yvz8pclugu3q3p5yn5qusjft82tyxxkm3zh9nw5edf93lyqxl3zayp664qtfj802rsq3xcrz2",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784098106363,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 0 is insufficient, required amount: 24414062",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 0.00 CKB, but this payment requires 0.24 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784098106362"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098106362"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098106362"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784098103349",
+    "invoice_address": "fibt244140621pc5av2wesezgfw0pnm6vkefvy9gj9py7tdgzxv9kyrpyzyh5plh29aeagjms34usjxtxudx464j48ny0dldsu0jt672zfkzg25ntujadn0s5gwzsfupwx2u4cz9hq59m5u9a46ergyusxwg4vj9h875j8kwwetyx7fzvap0w5merpn3xmrus8kg7d6t8l6gak66hqp3u2gu6r57f6a9ugf6tvcspg7zgjjl3wfjw06wvrp0yk7xw286fjzqjecnxpmmwrspv5svgrqvp3vzkyl5lh2c2cta4d3s0sejl59j300rjc9my63fccnpak9kw3twq2vyre85g4dtaw245xgwxjvr859pfnqp5ygdp9",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784098103349,
+    "error_raw": "InvalidParameter: Failed to validate payment request: \"invoice is expired\"",
+    "error_code": "ExpiryTooSoon",
+    "diagnostic_msg": "The payment invoice has expired or the TLC lock time expiry is too small. Either the invoice was generated too long ago, or your FNN node's block height is out of sync with the testnet tip. Generate a fresh invoice and retry.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784098103349"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098103349"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098103349"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784098091317",
+    "invoice_address": "fibt10000001pcsaug0p0exgfw0pnm6vkkp2pshunfr96zj6r0yh0r0xa2lftyxv0m2q22ctmnzwer22nr2xse6388atslruxkfw9p0urqpra2yx24wsut6dquu6hz634gsl9r4z2el5puk4tmd74e94tzj3ycqqyuvlvzhyz6vua2n74gz20dtgml9qa0yegqtqlqzd82ja46yuu33nh5wqvaggnwywut68g0as5ljrjv7dqpcj8sgl7w88hmxg03va97gmrccypxnrfv8zqm34yp9pdfvhp0dssltsuc0dl0hytvx7n5k05ajc3q4lc7fls9z6hcnj4053v0sale42xs4fvyxuee78vvh5jttkuspph4cs3",
+    "amount_ckb": 0.01,
+    "status": "Failed",
+    "created_at": 1784098091318,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 0 is insufficient, required amount: 1000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 0.00 CKB, but this payment requires 0.01 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784098091317"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098091317"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784098091317"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784097726606",
+    "invoice_address": "fibt11peg6u5d34cwgfw0pmm6vk4lx4ya3gs0x6dg8tdsjn392yrlnl0nqzmcxf5vz9c7qx0jzje4j8ud9sg5vzccjtasedv0q0u0kl4067kclx8rj8vl7j8gv28zfz83yxtfxvqc2k46zly2cgyt9tl7xq02edsztvmmujds3qd70y3lpyskzkyghl9ctp3cpndssgg53hxa6x28y67w8tcnvv9dd5y9tzq6cy8mr9w4tujh6kuk5gukpd9pvl84xglhttzqd68tsrpr5k6d38u9ck28ta5jj6zmune3t2h82qygc3557hqaqt3pfsm2su5hpvvdtmj2k52hn8x328ug8gvvt935ykes7mdmqa6vghgpr5klns",
+    "amount_ckb": 1e-8,
+    "status": "Failed",
+    "created_at": 1784097726606,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 0 is insufficient, required amount: 1",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 0.00 CKB, but this payment requires 0.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784097726606"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784097726606"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784097726606"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784097716590",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vk3l2rxw3qe30lnjj8vqcp9ptjvm3n88av2hng4qa5myw7r6p5tch2tc5ppwgdaderrzssc22rjll9azzm3qve9032h6ajkaf9kkerufkskqp4d5627wrezal7m0cpyy2ux757hhtaanvs8s2qmluv9f9f7sxj4ckugupad7akqd8zvuedqpjg06p53adywlztm5p7pwv3gswt04qx4thflvwv85tk4647la2kst6nusqdqrxy3kt6afcc26g39k4m6gyn5e0vzv0xeqphwqh907uhh8a024h2du08nah3kxe00vysrj39tszt7xx4s8n4453clas2v8j07fqvzsqthqdg9",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784097716590,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 0 is insufficient, required amount: 24414062",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 0.00 CKB, but this payment requires 0.24 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784097716590"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784097716590"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784097716590"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784097713575",
+    "invoice_address": "fibt244140621pc5av2wesezgfw0pnm6vkgqjcr4nspn655j570ymnngcf8pqkvvg4lalkmmn7x4ch4ewdv7dewtjwkkw5ctzc2cwq5n5nv9ta8jshtgh66wu5cstaaqr9hy3v93x4yw252ye06jwyqmk5ej8vffhwtlnzskke8ls0w0h6jx2mn8q3y309622n30axnpuzmkmzjapjkeq4mzceur8zegnvsru0wudse7fnh7h359w9kkwl8srqu7wv70jasvqq5yqvzg7ag554wa7dehdczprvjpdcuk8rzgrz53q2y6w4wwuhtzdnagtta5thcgnlv3q2jtvzhvmuvnwqrjmxt3tpvr6lz6lued4racgp6wpwjz",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784097713576,
+    "error_raw": "InvalidParameter: Failed to validate payment request: \"invoice is expired\"",
+    "error_code": "UnknownError",
+    "diagnostic_msg": "An unmapped error occurred during routing: \"InvalidParameter: Failed to validate payment request: \"invoice is expired\"\". Check node debug logs for details.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784097713575"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784097713575"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784097713575"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784097702553",
+    "invoice_address": "fibt10000001pcsaug0p0exgfw0pnm6vhrnxavllhmg2lnjjxvp56wh70p8dz88w0xttq3wll6nn8dga9p9qztgmdq7l8maeww94whfxs67jv670jujha4vap0pgefvueuptpqug3t8zzqavv3ykw7gjn6gqdxucgmln56g6n3yf9qemkcdd2ywdz6ua8q9lu9v67n4a5vhxpj09yuz3wfhm6ppqdgmmffaa7jcwwcf3nvt8ppstgktmn5n0n9sr0dxlxzsyng92c3jqu43tndqtkdyzusjasc5sqmdapq99jumk7guj9aexqxk8yattqm3257n7xj007thdt48gpfh8506ynkxp8ns6cf5alkt86qq3mzgkq",
+    "amount_ckb": 0.01,
+    "status": "Failed",
+    "created_at": 1784097702554,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 0 is insufficient, required amount: 1000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 0.00 CKB, but this payment requires 0.01 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784097702553"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784097702553"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784097702553"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784094094100",
+    "invoice_address": "fibt949262325761pccuuvw33c7gfw0pmm6vk8zrz93rvgn0j6nmz427je04tw9yc72pnvaplvqju2mjdeykp56rpux5pydr6qu0qxfwfs2nmh7lgmacny5gskww9uzkjq4hqk9rd0xhla0xmjfptrax9q6pacp0ny4vxldsev5j8pducg86ldzceneuy6fsshk8ccp4mh4me9gztqg9vlmxq74k9u64mffxh2r0y4snjack2d7yc2sfqm2253xrw62x2x78879htknuqqz6hdz5z6s5z39js02904k6a4fefa3nh2arkg9gg4nlcxk4qxk2z2lj8ffkla42k5g30xq6qhjf42p7ecqwhrth58lzq56gld0rudrsta03w04xpgpz8ya85",
+    "amount_ckb": 949.26232576,
+    "status": "Failed",
+    "created_at": 1784094094100,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 89951032427 is insufficient, required amount: 94926232576",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 899.51 CKB, but this payment requires 949.26 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784094094100"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784094094100"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784094094100"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784094094087",
+    "invoice_address": "fibt1500000000001pcg7uy03dewgfw0pmm6vhy8rvgw9yezrs8tuw09z3mf48nxlr6ps3jc43yecyg8fulcra6ugl3f6ctnsuh8ann6798uj5z4xjcmhrzrt94neydvu8e220eh4s6kelfte06tseg47yzdcf8wkr6pqmylwdqzqakrlt4aju4dc45sy859cdhmf2l9nvcu82dpv96tx5udnfhfn73r9khq4axyn78998sjp7v84ezwe9xpz25g2s6nq8nqhcnaanr47sqqrztlvpf3vppk7yg8tfmy5s5z88mwhpmra6q046pkgx9sktvzq57kg60d26a3y59uh8zuefgymxxff6sgggs7sdhrspskwelf6z59mxqq6vlv08",
+    "amount_ckb": 1500,
+    "status": "Failed",
+    "created_at": 1784094094090,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 89951032427 is insufficient, required amount: 150000000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 899.51 CKB, but this payment requires 1500.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784094094087"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784094094087"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784094094087"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0x9f0e698d435b3347e97dda4b03726238dcf3eb6d209a9688e0399587a7b3ef62",
+    "invoice_address": "fibt905281pccuuvw33c7gfw0pmm6vka04dunswuwtyf0j8vpt6dnw76qv35kx45djcc3c7gxw69fe9rhh7tv9f5rcfmurq59663p4gcqw6tqkgm8z0lv7lxnc0waq0gnsfs3zqa9x28fzjvzlfl7var8xyzymnvznyzdcyrrnlk622rxpq3d4084ft3wc2uft8uul3tjazhhy54rpm4fd8cf60tdapgeqrjs7u0t2jn89t40ggp5xraq48l0andhkndjdwpxrgmknk6kxlcqsjrn48agh8tsjrx344kga7hxgqrzzu2m53383he249z63223rlnsgq03jt9c6m369zpw9js4tja7sfhcapdhejmtftqtfsxm9suandcp4hu9re",
+    "amount_ckb": 0.00090528,
+    "status": "Success",
+    "created_at": 1784091724230,
+    "fee_ckb": 9.1e-7,
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0x9f0e698d435b3347e97dda4b03726238dcf3eb6d209a9688e0399587a7b3ef62"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Success",
+        "payment_hash": "0x9f0e698d435b3347e97dda4b03726238dcf3eb6d209a9688e0399587a7b3ef62"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Success",
+        "payment_hash": "0x9f0e698d435b3347e97dda4b03726238dcf3eb6d209a9688e0399587a7b3ef62"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784091724217",
+    "invoice_address": "fibt1500000000001pcg7uy03dewgfw0pmm6vk6vx5wl09swtyf0h20ptxhufyaqpnr3pkw3gy4gmzlm9zplegtul0qq37g5xm9xjhp5j9mvze27rh4g8s8tcchztffyrlc26knasa27jfpku4n2w6a4s28ez8aymul2skde7zjw7fx8ysa3wk7yaw2ekv8v7ssykps380gwr80unyhsq9rw2qtykhj6kcc6y4spucuasvhkn5g9ggu74du7kx4zvgq8khne3egjpmc8envs4k2ggqs4y3q4k08w235dkqhayk203mwq6ahmukpd4grr4xj85w93ehq0edjhsq9ufhfuwrq2u0t4jrqnnnt7ewj93te0f23yxvvkfecp5rfxr2",
+    "amount_ckb": 1500,
+    "status": "Failed",
+    "created_at": 1784091724220,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 89951123046 is insufficient, required amount: 150000000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 899.51 CKB, but this payment requires 1500.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784091724217"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784091724217"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784091724217"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784091642243",
+    "invoice_address": "fibt949262325761pccuuvw33c7gfw0pmm6vk4q9rgwkjaa4c4m570pteu2p9fv0ga0er26jyqzus2gu46tqqwh8u6e9l029027t3qfrv9cpeyylmm6hw0a904utr0hpq7m4hvhj04kzwwaeu9kd28mz08g58mkjt867mafeh2mg6uc9fmp94n20zu33jpej6sptqyhns496c77xlgd4humtymyr04v97w72tyucjpmhlreqprzh2aacsz4s7gdjkvaatd04rzl39zw6x8uqn2cz5pxqqgkdfg2nvt5hy2akmy8trrpzy4rvcuqztdm5z8fz2z9faczf3c8phan95w6t8xwmmqkes090wdaanwfe0hkh0vz8st08hqvuqtktgzdcpg0gu3k",
+    "amount_ckb": 949.26232576,
+    "status": "Failed",
+    "created_at": 1784091642243,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 89951123046 is insufficient, required amount: 94926232576",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 899.51 CKB, but this payment requires 949.26 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784091642243"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784091642243"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784091642243"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784091642234",
+    "invoice_address": "fibt1500000000001pcg7uy03dewgfw0pmm6vk3ukf664fj9zj0q06v992h0mgt8qm9m97d22a5qnxkrdfuuww7xv8kvnue6kavla3fyvnrnjgfpkt88mrqesy2ved2852v8n03u503d8cyh5tm98uh3lgkfyd0kztm6ejsq8cyg2p98qf4qnkewsu6t4djaqu9t4rn5czhegqma86ddjaflweuvrl2key8cemkdmr5zh6y7ulxkpv03gjm6p0sml4sm4zzwmu2wusqdqqjjqqhfcfyn8nc372ru6s0jd7gxjh5hpt4sm7nq00lt2fw4dxqtmctt4324e6uy6nt4876h3ade2hsh2ar52etv9ffm5uvfng5nlswck4nlsp388zws",
+    "amount_ckb": 1500,
+    "status": "Failed",
+    "created_at": 1784091642235,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 89951123046 is insufficient, required amount: 150000000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 899.51 CKB, but this payment requires 1500.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784091642234"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784091642234"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784091642234"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784091466307",
+    "invoice_address": "fibt256000000000001pccuuvw33c7gfw0pmm6vkvz7ysm3l09yezmy70pqk04ej4qjx26c3tqlecc4xyqtu0kyxa9krvr3n4caxthdpden6e77jrnjhze2sddrpwajzwma7g779smnmc6nvygr5a5r7s6nf7puuvt6v829xyjk2lkyh9tmgmsnsywg5qwf54xev9q8stken3l2k37egyerkv2ueeqd8j4yprw7l3v7rdnds3vwcdwe7ug68sz887a6lnggnf90tmta54r403klnjvv8uq4tvngn9ctehrzjfuyuqg9fzlv55ldtk6jhdjyy09wc8hz8h9kzdjv37xp3ugmakmj69vwazkf0gayugzyqnrkwxylqcl2jgz86xz07cp3ppuvw",
+    "amount_ckb": 256000,
+    "status": "Failed",
+    "created_at": 1784091466308,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 89951123046 is insufficient, required amount: 25600000000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 899.51 CKB, but this payment requires 256000.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784091466307"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784091466307"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784091466307"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0xb0109952303eb7e2267ce601d6a84d01a3704325bf77080a26e7c465935f52d2",
+    "invoice_address": "fibt1000000000001pccuuvw33c7gfw0pmm6vkvhtddzdrpsxg0q24v9s8zv3q904u0dgwmtdeq2xlmvj7z5nth9gtgq9emt84awjazj384l9z4hqc6u3zf68matec0vaetkm6zk4szf0vr5np3flaytu88fagtusd4sw98ce2z2qyfw8y0z4633qxm8ayrxtwgrl597a4pfa7md5nkeatcx9n8hqkacet9uz5gva3h8dkvkqeczpwg28hu6ymlhkkjp9w92xq86slpk00guttevf9ap5029uyynhznz22xva4pm5f0xexa9evhn7ntk5wlfqj2r7y4qd3n7pzdzzqk4qw4vafe7vghaejug28hf3ee852zn4rshw88avgvagp57v8my",
+    "amount_ckb": 1000,
+    "status": "Success",
+    "created_at": 1784091213392,
+    "fee_ckb": 1,
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0xb0109952303eb7e2267ce601d6a84d01a3704325bf77080a26e7c465935f52d2"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Success",
+        "payment_hash": "0xb0109952303eb7e2267ce601d6a84d01a3704325bf77080a26e7c465935f52d2"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Success",
+        "payment_hash": "0xb0109952303eb7e2267ce601d6a84d01a3704325bf77080a26e7c465935f52d2"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0xcdf913f6e9e9586030a3b102325b61b27f6ed6d5aba9589bb459819e965ddc46",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vkts2w5w7fy9a28xxk09hvckm2a4j4m0zduguz8x47c8whxk3qmxhsyh9hd272ddqmj548z8cnz8dv9sy8ad4pxy4u36hklk3rxfwtrmxur5p6d6fxqd7zp4k39x0acs0jet539nwsrw5pzyg6satpg8ypgpuj54ujxszefvr9nu3xp5uv47ulu8alas4pk7q5y4nx6aav6l4qcmjg277e5v75cpvrzjw8nkczkv7ggrs85d0v2qlfpcwy9dc2rv59f3qpm7duh6j4t2p68pqxpfu5dunnj7gg8nfstqle24dn4w90pdl80akwfr5phztqzenw75ft09uunepe898ltpjpftxsspwpksus",
+    "amount_ckb": 0.24414062,
+    "status": "Success",
+    "created_at": 1784091030091,
+    "fee_ckb": 0.00024415,
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0xcdf913f6e9e9586030a3b102325b61b27f6ed6d5aba9589bb459819e965ddc46"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Success",
+        "payment_hash": "0xcdf913f6e9e9586030a3b102325b61b27f6ed6d5aba9589bb459819e965ddc46"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Success",
+        "payment_hash": "0xcdf913f6e9e9586030a3b102325b61b27f6ed6d5aba9589bb459819e965ddc46"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0xc50ce194cc8d4c13756811f5221483b9174efcab2e233af5fc04cd51b4867383",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vk807ldu2p94z5x306v94rd49xdmmwpfxk5ayruna8ejalmksv89w5r448vyxh2e0wle6ffphpuh9n7wkecmurxtszznmunrglax9fj0lqcye2zt5ql428zutctwesf2dskf6fwz2mg57s59pqdlh2x0pu30an7c009knylhjhqdqhqv29mgwaljk2s4rxrhpnvrtahqfgexsgdgvphkvhynzwhe8ljhzw60ehlcg7sq7gd87dugk6wqnqap0tfm6avv5gg3m38jl35vlt8rtxqpslpankpta20cp4dq3qvx09ck5yvl5rzqexyr99vyx20rrhw8qrxc3llkr7xrk59kzjehuycqp85cte",
+    "amount_ckb": 0.24414062,
+    "status": "Success",
+    "created_at": 1784022264361,
+    "fee_ckb": 0.00024415,
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0xc50ce194cc8d4c13756811f5221483b9174efcab2e233af5fc04cd51b4867383"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Success",
+        "payment_hash": "0xc50ce194cc8d4c13756811f5221483b9174efcab2e233af5fc04cd51b4867383"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Success",
+        "payment_hash": "0xc50ce194cc8d4c13756811f5221483b9174efcab2e233af5fc04cd51b4867383"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0xc82dc595cc77ade21a77b0d9b178aeef001330169696b96adb267dc0fe2cdcf4",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vk6zpcvs3k566085pvf946540tjwarw0x5r0krfwrlswq9pun5mmlt0hzfrpt5zrja5hhkenwu8gekgq555wgzzyg7n0mmmam6z3exkgu88hxsr49g2fs52ywz6jsguwn8rg66ewa03pg849r2fpxd33rnc4fejqlrd5njd58wq9wrl8g7uvg3tr9r4kctw9c8hhznm4mvkmn6xa5cmxu90zy95emwgpv8u7fh6rynara3hrqs4jwgcqxzz54kp4j0dkk6wue3dfukew0f2gjw5wur3a7uzcwejahfvyxf3s7deffqrzlxcyj6sxfndxfgkrjqpxtg0fcuz7s9r4wcgcz4tf5agqwf5r90",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784022024888,
+    "error_raw": "Build payment route error: Failed to build route, PathFind error: no path found",
+    "error_code": "NoRouteFound",
+    "diagnostic_msg": "No path could be constructed to the destination node. Ensure the recipient node is registered in the graph, has active channels, and is connected to the P2P network.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0xc82dc595cc77ade21a77b0d9b178aeef001330169696b96adb267dc0fe2cdcf4"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Success",
+        "payment_hash": "0xc82dc595cc77ade21a77b0d9b178aeef001330169696b96adb267dc0fe2cdcf4"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Success",
+        "payment_hash": "0xc82dc595cc77ade21a77b0d9b178aeef001330169696b96adb267dc0fe2cdcf4"
+      }
+    ]
+  },
+  {
+    "payment_hash": "error_sync_1784020866335",
+    "invoice_address": "fibt244140621ph9rtj3ey6jgfw0pnm6vhp7rwgh9044d6xweevyg6e43xeu96pgary7ergz9xd8xrxdq0hnve97ces4uejqwkrhzp73y8fcs8sfluckjsj4vkj6xek8xva9x46p30s3cycyn55jspvsfw7njlmxqvelghles500tzm74zwg8ukqvw2395p4eckhlv7s0ghupfgdqzjnchmeczqjprwmq0r6z9vr7npzr9fv0llr5snn55tv3jcfmuq86cxtvcydq0mz4c6ey3neq52382wsvkxvqxhxdtc7u57jgczjuvzzlggsdr2rs9dkpj5n7ldt0fadlewujgruqw6a8ee9wvzj2vqd7gpt3hv4u",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784020866335,
+    "error_raw": "Send payment error: Failed to build route, PathFind error: no path found",
+    "error_code": "NoRouteFound",
+    "diagnostic_msg": "No path could be constructed to the destination node. Ensure the recipient node is registered in the graph, has active channels, and is connected to the P2P network.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Failed",
+        "payment_hash": "error_sync_1784020866335"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "031dea545a3dccb00bc246affde06814dafe231cc6b20f950e87084922c4c4d0c3",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784020866335"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "error_sync_1784020866335"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0xd6a465e11706d60ff415e6f960b41ea836a02a005ea996d6b0abf242a8f3add4",
+    "invoice_address": "fibt244140621ph9rtj3ey6jgfw0pnm6vkfcxqsexuppm6ve020pexr4u6e665sqff5f8mktfxw5j8q083kndh0pe3yze7u22hqs72lrh56swylya4fjn2elltqkeyw9f56gsnr3y5g4xmyrx2f9h79qaarf3zta6efmsa5z43nq93umy5dd6alplmp6nx8lmprquvumu37achxps78x6rcv0ntn3wtkk8lwqvce8l82vh2t5gsxge8g0h3s2l4u2cs6hx5xmsjchuv8rp3vwtu2lgyaqnz4nyxjjvtj4x5dzqwqez9rd9hzj8yyj9xs5r70s7l2djnc7lse546pgaq042qa30tegt98d8qz7cpcdveeu",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784019522362,
+    "error_raw": "RouteSearchTimeout",
+    "error_code": "RouteSearchTimeout",
+    "diagnostic_msg": "The routing engine took too long to find an active path. This indicates downstream channel congestion or that the destination node is currently offline.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0xd6a465e11706d60ff415e6f960b41ea836a02a005ea996d6b0abf242a8f3add4"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "0xd6a465e11706d60ff415e6f960b41ea836a02a005ea996d6b0abf242a8f3add4"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0x9292899fa4c393dd3e00e113fbe4fced1b1f60d6a07ac66b1dd7d2cc2cc972c7",
+    "invoice_address": "fibt244140621ph9rtj3ey6jgfw0pnm6vkhw09sw8np5s73yecv9g5kn3jx7mj9a3vsntudd5cthyvj5f7k9stn780d4vkcffa9vs2075ufnrt7apxtew79n9xs3qs2aasudulervzl9x923ec8kklr5gqw7tpy29uvfg70nk6umhw99fcce06ekvtc234fvephh8mtkwgekwg5fzcamqagmuqvmtwjdlkvapfcqlxpays4amd5a982kvcymfqhal6qhhdk8j64y5futg4hrvfjmnprxug9gk928x09q97e32s7u9c6vyaqfyujfmwxneps2a6jn2cmw43pspgme5uwg0p5g7a93jhxjzh90vcpgeex23",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784017698724,
+    "error_raw": "RouteSearchTimeout",
+    "error_code": "RouteSearchTimeout",
+    "diagnostic_msg": "The routing engine took too long to find an active path. This indicates downstream channel congestion or that the destination node is currently offline.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0x9292899fa4c393dd3e00e113fbe4fced1b1f60d6a07ac66b1dd7d2cc2cc972c7"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "0x9292899fa4c393dd3e00e113fbe4fced1b1f60d6a07ac66b1dd7d2cc2cc972c7"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0x63e092a1b4af4f8fffb55702c4db422dcde975d022ae2b281e7a9a82ff13627c",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vkekcyhfawclcsl5pv25a38x9zh2lj5azx5zxxcg2e2f5m26tpz6uzrsjlgc9y3da5x089egl28uxlqyg5lhwgtyt4h6um69gxlux2y2xv443a9w57nkxfpyltljf0tl8sz4ep0qlpm7wlhk9eclpdm7fcxy2jwdx5prjeay9tuuvw49t2eqnkr2l2flxdgn7vnmqnd03xyp2tv5xagenc83rk6snhvhuvkxn7hk0xuvqy3kzg44dp2qwmyn323r57amlgwfz8s6rvz88jujaxn4r2caeqcmt4mzm6f5ukhhv6gunrd23h0uc3hdhxrc29gafd65r9k4rqc09ragem5w5ycd5xcqeu5x3l",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784017382844,
+    "error_raw": "RouteSearchTimeout",
+    "error_code": "RouteSearchTimeout",
+    "diagnostic_msg": "The routing engine took too long to find an active path. This indicates downstream channel congestion or that the destination node is currently offline.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Payer (Self)",
+        "status": "Success",
+        "payment_hash": "0x63e092a1b4af4f8fffb55702c4db422dcde975d022ae2b281e7a9a82ff13627c"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "021df85a50e15ae35aabb8cb92e369954db2adee86dbe834739f2619531ca4080b",
+        "status": "Untracked",
+        "payment_hash": "0x63e092a1b4af4f8fffb55702c4db422dcde975d022ae2b281e7a9a82ff13627c"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Recipient",
+        "status": "Untracked",
+        "payment_hash": "0x63e092a1b4af4f8fffb55702c4db422dcde975d022ae2b281e7a9a82ff13627c"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0xc0c3a24ff4b24749518a156a318f9d2a50e73e83bd1f4506c84b7e37714ee1a3",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vhrg0nlmqtj88pm5xdd4n5yyne559kly7pknq0z63pj0mzng07xd60rqu66jrx7srrg4tyeseg9detfqlc0adphckqrlnslz4ppvjl88y6fdq8ky9vqxj2gav6mlprh3v4zm9guz52n440xtsvp9mfdsztl4kquqe60z6tt0qyatvyccxcau0le43r8wqqw6zf54w3k3c3s80smqnju4szx7vcts8qe5fus6qsftl5dzzlaj84mnku52qqmqful20dgv0d05kptakgzr2cmwkx87qgmvw93s2tyjzl4d33xz8h3j0vt7q73gmg0c7evh2qj2sv8anma4h35ldamukyjhxhfzwa5zgpguk490",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784016848387,
+    "error_raw": "RouteSearchTimeout",
+    "error_code": "RouteSearchTimeout",
+    "diagnostic_msg": "The routing engine took too long to find an active path. This indicates downstream channel congestion or that the destination node is currently offline.",
+    "hops": [
+      {
+        "hop_index": 0,
+        "node_pubkey": "Node A (Self)",
+        "status": "Success",
+        "payment_hash": "0xc0c3a24ff4b24749518a156a318f9d2a50e73e83bd1f4506c84b7e37714ee1a3"
+      },
+      {
+        "hop_index": 1,
+        "node_pubkey": "Node B (Hop)",
+        "status": "Untracked",
+        "payment_hash": "0xc0c3a24ff4b24749518a156a318f9d2a50e73e83bd1f4506c84b7e37714ee1a3"
+      },
+      {
+        "hop_index": 2,
+        "node_pubkey": "Node D (Recipient)",
+        "status": "Untracked",
+        "payment_hash": "0xc0c3a24ff4b24749518a156a318f9d2a50e73e83bd1f4506c84b7e37714ee1a3"
+      }
+    ]
+  },
+  {
+    "payment_hash": "0x21158aa6ae90eb5bc6f84f0f612b38bcb0764f3f7621129912b8d5ac580b41fd",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vkedcs450djl08zqhgfyd384edhyykumlfkuvp3j8a05ptp0vkgfcqv09vpa60d6hk8dpxvknynhhdpaqcm4m3jj2sn42xqgdjarwx5c2gwcfh2335fcpzry043glv7xwtzny52rc6ufswhr7rnmasmxpm3atx7nh5t7lc7t796j2uz7jzlqk4cee2frfw00ndte9h2wn9uk79g8qjn7g98lkgxuq7ph220fzywqlv7t22dj2a8c2agqlzrk8ck8exvhf3apfs6sdrzexhzmdukappnhz49lv4e5d6aw7nsjsalgpx6ad8vclg5cdrkt5ny525rf3zt50ynen8s6wmh766u56mspqrlk9s",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784016775078,
+    "error_raw": "RouteSearchTimeout",
+    "error_code": "RouteSearchTimeout",
+    "diagnostic_msg": "The routing engine took too long to find an active path. This indicates downstream channel congestion or that the destination node is currently offline.",
+    "hops": []
+  },
+  {
+    "payment_hash": "0x9992abd0bbacbecdea06b383e236b4279b88d594595c95adf3f76ecef0c77403",
+    "invoice_address": "fibt244140621pccuuvw33c7gfw0pmm6vkepkgq75mv95uatyvc25zh0pshhvfvudt4s7jwpkfahu590gjtg5u5jakvqhz0st0larjv5j9f2qdzw9yvvew4wqe8khqd9ak29k4uvp8mkqz0augxr08ushpn55lu7xuv6n7whf3w9v62f4unk70rw0qzz4mkkhvh3edkvhufyyh2cghew9ytskfmkwv4klkq0xhzdzu9a3jreecc0mfauwm0gj9jn5tkf8tpy2djn8qyakraayakq5yg3xv3hgjrwfd99wl4dxp5cjpyk4p3y8py57h5n8zw337sqw79s902ek3sy30r7eajmlc6nkfvsvfarzssm60szereut29fgsmrh0gpstcwvw",
+    "amount_ckb": 0.24414062,
+    "status": "Failed",
+    "created_at": 1784016510638,
+    "error_raw": "RouteSearchTimeout",
+    "error_code": "RouteSearchTimeout",
+    "diagnostic_msg": "The routing engine took too long to find an active path. This indicates downstream channel congestion or that the destination node is currently offline.",
+    "hops": []
+  },
+  {
+    "payment_hash": "error_sync_1784016439492",
+    "invoice_address": "fibt1000000000001pccuuvw33c7gfw0pmm6vkm5agy5lep264eyecv9zpwl692jgvzvae9fqucja832p94nnmpse9nynk8w986lfqq5s4se22qdze8zh2jfcx0a2werpjdnj049m7jns2hh4vlkddxn6l34wfxgmjxj99c2qkh56c2cnmxdk2u044u66arjcn6pv78p0jht5jade2ju54w7s47864f5ee8wwwmg2nw6ulp3raf578jk5uy7vngxnug56mhw9ct8a7uk7027hyptnu2qdpuq66c8xwhuyx9kq8plft296x3f5xte8cvlz0rwe4at49ef4594kz7pvlxctljqtn95p0cdxdha5vqtj60x9f37gdu22katal3wprcq7zm9u6",
+    "amount_ckb": 1000,
+    "status": "Failed",
+    "created_at": 1784016439492,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 90000000000 is insufficient, required amount: 100000000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 900.00 CKB, but this payment requires 1000.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": []
+  },
+  {
+    "payment_hash": "error_sync_1784016023905",
+    "invoice_address": "fibt1000000000001pccuuvw33c7gfw0pmm6vksp5tjjmk6wr4wazxvq525n3fdn2fh63n2gud9da4rftg574e94y2f7p4e6a829m7cuj9epaawtekysdcsx83hk45xftuf8yudrd6cl0ggw6u4dzsgs7s5v9l57gsr7wqtv7mc89y4t0ele46rgpucsvjfxdelt4xqr37jfultl3zcm65nyc7pad0u9xfkgwzkd9j5w3mlz7q4paznwt8cswu29v2hn57gsw75g3xgxajkxmwwzgh20uzxc6gk7jclncl7phcc56rwj4fyx70n9je9gmfl4czc7lp8xgxttje4cq953vnyqhrrg9nfgd7jx95a0lq7yynmajqh65fgc988dcqzwadg8",
+    "amount_ckb": 1000,
+    "status": "Failed",
+    "created_at": 1784016023906,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 90000000000 is insufficient, required amount: 100000000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 900.00 CKB, but this payment requires 1000.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": []
+  },
+  {
+    "payment_hash": "0xdb9fcf0ba4a720409fe2da3421435df0db72d94f5d583eb279638904ab881fa4",
+    "invoice_address": "fibt594099768321pccuuvw33c7gfw0pmm6vk6y9umlkgcr83yur7096j4xl3zw2ksslu0vnenyj7hln9pnndynfz5yxhrh4zmwy6lvunu22wg5kvmwk5wmvqq48wvgeg9y6hz9eda7s9tqyg89u3utc8hzs7l6l2230rc55hwqpjfrn6ccg20tnfreapnj4rm5zvvsunk3y7q08ekm2hase7tn6y5m6ur6m0ytc322r24qphku9kvmn2gly4a2exfv3ycp5qyxp2caskwuc4ynqgnn9juyctxn02pp7wvtmcwwkrk3new7vppxy9g2vmqfa0g27w70f8y5l3u5582dxwnjz3k82ps4d9ng983vwr8tah0lspz0madgwwaqspqgh2sa",
+    "amount_ckb": 594.09976832,
+    "status": "Failed",
+    "created_at": 1784015832235,
+    "error_raw": "RouteSearchTimeout",
+    "error_code": "RouteSearchTimeout",
+    "diagnostic_msg": "The routing engine took too long to find an active path. This indicates downstream channel congestion or that the destination node is currently offline.",
+    "hops": []
+  },
+  {
+    "payment_hash": "error_sync_1784015832229",
+    "invoice_address": "fibt15000000000001pcg7uy03dewgfw0pmm6vk4sltca8hc750ue020y694v378hxtp0awf6duwg6wgku29rnlqpmjd85e6zllf55h3wmpugu82ruj5hsahs9dzkvr65jclqgydlaqjfk7pme6eg5x65rw56qnz3es8s0j79jhzkvseq5zqkw7vs63aywflkyr3gdwxgk8w5kgp7avxv924009zt258upxyp4nhaqtjruv25zagn97s2dgja48npneyaxtqf7f0jxn8wye7se2tdlh0aumklk3szj8z2hyqkkqzkjpn8scxc26n55kwa7z7fhaxxrpjtgwwrksj6satsp0l85r6vlcdddyurdjruhrgpnzzwm90auegqfq8l7k",
+    "amount_ckb": 15000,
+    "status": "Failed",
+    "created_at": 1784015832229,
+    "error_raw": "Send payment error: Failed to build route, Insufficient balance: max outbound liquidity 90000000000 is insufficient, required amount: 1500000000000",
+    "error_code": "InsufficientLocalBalance",
+    "diagnostic_msg": "Your local channel balance is insufficient. The maximum outbound liquidity on this channel is currently 900.00 CKB, but this payment requires 15000.00 CKB. Try funding your channel or wait for incoming balance shifts.",
+    "hops": []
+  }
+]

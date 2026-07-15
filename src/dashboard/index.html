@@ -509,6 +509,21 @@
       return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
 
+    async function loadStaticHistory() {
+      try {
+        const response = await fetch("history.json");
+        if (response.ok) {
+          const history = await response.json();
+          paymentsMap.clear();
+          history.forEach(p => paymentsMap.set(p.payment_hash, p));
+          renderPaymentsList();
+          console.log("[Fallback] Static transaction history loaded successfully.");
+        }
+      } catch (err) {
+        console.warn("[Fallback] Failed to load history.json (this is normal when running server-only):", err.message);
+      }
+    }
+
     function initWebSocket() {
       const wsUrl = `ws://${window.location.host}`;
       console.log("[WS] Connecting to:", wsUrl);
@@ -669,6 +684,7 @@
     document.getElementById("search-bar").addEventListener("input", renderPaymentsList);
 
     // Bootstrap
+    loadStaticHistory();
     initWebSocket();
   </script>
 </body>
