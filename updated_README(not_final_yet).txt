@@ -238,6 +238,22 @@ When a payment fails with a retryable error, the SDK could automatically exclude
 
 When a payment crosses from Fiber to the Bitcoin Lightning Network via a Cross-Chain Hub, failures become harder to debug because the error could originate on either chain. Future versions could correlate errors across both networks and present a unified failure trace.
 
+8.10 Multipath Payment Diagnostics
+
+Fiber's design documents describe support for multipath payments (MPP), where a single large payment is split into smaller parts routed through different channels simultaneously. There is currently no developer tooling to visualize or debug how a payment was split. The dashboard could show which sub-payments were created, which path each part took, which parts succeeded and which failed, and the aggregate result. This is essential for debugging partial-success scenarios where some splits complete but others do not.
+
+8.11 Circular Rebalancing Assistant
+
+In Lightning, node operators use circular payments (pay yourself through a loop: A to B to C to A) to rebalance drained channels without opening new ones or going on-chain. Tools like Ride The Lightning and ThunderHub provide one-click rebalancing. No such tool exists for Fiber. The dashboard could detect heavily drained channels using list_channels balance ratios, suggest circular rebalancing routes through the network graph, and execute them via send_payment_with_router with the operator's own node as both sender and receiver.
+
+8.12 Fee Simulation and Cost Estimation
+
+Before sending a payment, Lightning tools like Lightning Terminal let developers estimate the total routing fee across multiple candidate paths. Fiber has no fee estimation tool. Using dry_run combined with local graph data, the proxy could return a list of candidate routes with their estimated total fees, letting the developer pick the cheapest or most reliable path before committing.
+
+8.13 Network Health Explorer
+
+Lightning has public explorers like 1ML and Amboss that show the health of the entire network — node uptime, channel capacity distribution, fee market trends, and connectivity scores. No equivalent exists for the Fiber network. The dashboard already queries graph_nodes and list_channels. Extending it to render a network-wide topology map with node health scores, fee policies, and capacity rankings would give Fiber its first network health explorer.
+
 
 Summary:
 
@@ -248,3 +264,4 @@ Stack: TypeScript, Node.js, JSON file storage, HTML/CSS/JS
 Fiber integration: Wraps FNN JSON-RPC, uses @ckb-ccc/fiber SDK as reference
 Hackathon scope: Proxy + parser + dashboard + SDK + testnet scenario scripts
 Primary future contribution: Upstream PR to expose TlcErr natively (8.1), which unlocks per-hop attribution, the full heatmap, and the retry-with-exclusion feature
+
