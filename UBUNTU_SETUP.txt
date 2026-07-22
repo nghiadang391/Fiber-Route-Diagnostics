@@ -1,0 +1,178 @@
+================================================================================
+  FIBER ROUTE DIAGNOSTICS — UBUNTU SERVER SETUP GUIDE
+================================================================================
+
+IMPORTANT NOTE ON THE FNN BINARY
+─────────────────────────────────
+The bin/fnn binary in the GitHub repository is compiled for macOS ARM64.
+It will NOT run on Ubuntu Linux. You must download the Linux x86_64 binary
+from the Fiber releases page as described in Step 4 below.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. SYSTEM REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OS:       Ubuntu 20.04+ (x86_64 or ARM64 — choose matching FNN binary below)
+RAM:      Minimum 2 GB
+Disk:     Minimum 5 GB free
+Network:  Outbound access to CKB testnet bootnodes (port 8228)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. APT SYSTEM PACKAGES (install once)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y \
+  curl \
+  git \
+  build-essential \
+  ca-certificates \
+  unzip \
+  wget
+
+Explanation:
+  curl / wget   — for downloading Node.js installer and FNN binary
+  git           — for cloning the project repository
+  build-essential — C compiler toolchain, required by some npm native modules
+  ca-certificates — needed for HTTPS requests from Node.js
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. NODE.JS v18+ (required runtime)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Install via NodeSource (recommended — installs Node.js v20 LTS):
+
+  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  sudo apt install -y nodejs
+
+Verify:
+  node --version   # should print v20.x.x or higher
+  npm --version    # should print v10.x.x or higher
+
+Why v18+: The proxy server uses ES2022 features (structured error cause, 
+          Array.at(), Object.hasOwn()) that require Node.js v18 or later.
+          The tsconfig.json targets ES2022.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. FNN BINARY (Linux version — replaces the macOS binary in bin/)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The bin/fnn in the repository is macOS ARM64 and will NOT work on Ubuntu.
+Download the correct Linux binary from:
+
+  https://github.com/nervosnetwork/fiber/releases
+
+Steps:
+  1. Go to the Releases page above
+  2. Download the latest release matching your CPU:
+       - Ubuntu x86_64:  fiber-<version>-x86_64-unknown-linux-gnu.tar.gz
+       - Ubuntu ARM64:   fiber-<version>-aarch64-unknown-linux-gnu.tar.gz
+  3. Extract and replace the binary:
+
+     tar -xzf fiber-<version>-x86_64-unknown-linux-gnu.tar.gz
+     cp fnn /path/to/Fiber-Route-Diagnostics/bin/fnn
+     cp fnn-cli /path/to/Fiber-Route-Diagnostics/bin/fnn-cli
+     chmod +x bin/fnn bin/fnn-cli
+
+  4. Verify:
+     ./bin/fnn --version
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. PROJECT SETUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Clone the repository:
+  git clone https://github.com/nghiadang391/Fiber-Route-Diagnostics.git
+  cd Fiber-Route-Diagnostics
+
+Install npm dependencies (installs all packages in package.json):
+  npm install
+
+This installs:
+  Runtime dependencies:
+    axios@^1.6.8      — HTTP client used by the proxy and SDK
+    express@^4.19.2   — HTTP server for the proxy and dashboard
+    ws@^8.17.0        — WebSocket server for real-time dashboard updates
+
+  Development dependencies:
+    typescript@^5.4.5     — TypeScript compiler
+    ts-node@^10.9.2       — Run TypeScript files directly without pre-compiling
+    ts-jest@^29.1.2       — Jest transformer for TypeScript test files
+    jest@^29.7.0          — Test runner for unit tests
+    @types/node@^20.12.7  — TypeScript types for Node.js built-ins
+    @types/express        — TypeScript types for Express
+    @types/ws             — TypeScript types for ws WebSocket library
+    @types/jest           — TypeScript types for Jest assertions
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. ENVIRONMENT VARIABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Required for running FNN nodes (used by the integration test scripts):
+
+  export FIBER_SECRET_KEY_PASSWORD="test_rpc_password"
+  export RUST_LOG="info"
+
+Optional proxy configuration (defaults shown):
+  export FNN_RPC_URL="http://127.0.0.1:8227"    # FNN node address
+  export PROXY_PORT="9227"                        # proxy listening port
+
+Tip: Add these to ~/.bashrc or ~/.profile to make them persistent:
+  echo 'export FIBER_SECRET_KEY_PASSWORD="test_rpc_password"' >> ~/.bashrc
+  echo 'export RUST_LOG="info"' >> ~/.bashrc
+  source ~/.bashrc
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. FIREWALL PORTS (if using UFW or cloud security groups)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Open these ports if you want to access the dashboard from your local machine
+while the proxy runs on the Ubuntu server:
+
+  sudo ufw allow 9227/tcp   # Fiber Route Diagnostics proxy + dashboard
+
+FNN node ports (only needed for inter-node communication in test scripts):
+  sudo ufw allow 8227/tcp   # Node A RPC
+  sudo ufw allow 8327/tcp   # Node B RPC
+  sudo ufw allow 8527/tcp   # Node D RPC
+  sudo ufw allow 8228/tcp   # Node A P2P
+  sudo ufw allow 8328/tcp   # Node B P2P
+  sudo ufw allow 8528/tcp   # Node D P2P
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. RUNNING THE PROJECT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Terminal 1 — Start the proxy + dashboard:
+  npm start
+  # Proxy listens on http://127.0.0.1:9227
+  # Dashboard available at http://<server-ip>:9227
+
+Terminal 2 — Run integration tests:
+  node src/real_fnn_error_scenarios.js
+  # or
+  node src/real_fnn_testnet_multihop_fail.js
+
+Run unit tests only:
+  npm test
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. QUICK VERIFICATION CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  [ ] node --version        → v18.x or higher
+  [ ] npm --version         → v9.x or higher
+  [ ] ./bin/fnn --version   → prints Fiber version (Linux binary, not macOS)
+  [ ] npm install           → completes without errors
+  [ ] npm test              → 22 tests pass
+  [ ] npm start             → proxy starts on port 9227
+  [ ] curl http://127.0.0.1:9227/api/payments → returns JSON array
