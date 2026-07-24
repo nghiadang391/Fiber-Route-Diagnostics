@@ -81,6 +81,20 @@ export class FiberDiagClient {
     return this.get("/api/payments");
   }
 
+  public async getStats(): Promise<import("../proxy/stats").PaymentStats> {
+    return this.get("/api/stats");
+  }
+
+  public async testRoute(invoiceAddress: string): Promise<{
+    success: boolean;
+    route?: any;
+    error?: string;
+    diagnostic?: import("../proxy/parser").DiagnosticResult;
+  }> {
+    const response = await axios.post(`${this.proxyUrl}/api/payments/dry-run`, { invoice: invoiceAddress });
+    return response.data;
+  }
+
   /**
    * Fetches detailed information for a specific payment, including its hops
    */

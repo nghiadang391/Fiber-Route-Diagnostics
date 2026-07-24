@@ -1,10 +1,15 @@
 import express from "express";
 import http from "http";
 import path from "path";
-import axios from "axios";
 import { initDb, savePayment, updatePaymentStatus, saveHops, getPaymentWithHops, getAllPayments } from "./db";
-import { initWebSocketServer, broadcastPaymentUpdate } from "./ws";
+import { initWebSocketServer, broadcastPaymentUpdate, broadcastRaw } from "./ws";
+import { computePaymentStats } from "./stats";
 import { parseFnnError } from "./parser";
+import { createFnnClient } from "./fnnClient";
+import { extractAmountFromInvoice, buildApproximateHops } from "./routing";
+import { refreshNodeAliases } from "./nodeRegistry";
+import { getAllNodeAliases } from "./db";
+import { generateProbeHash, runProbe } from "./prober";
 
 const app = express();
 app.use(express.json());
@@ -13,30 +18,17 @@ app.use(express.static(path.join(__dirname, "../dashboard")));
 const PROXY_PORT = process.env.PROXY_PORT ? parseInt(process.env.PROXY_PORT) : 9227;
 const FNN_RPC_URL = process.env.FNN_RPC_URL || "http://127.0.0.1:8227";
 
+const fnnClient = createFnnClient({ rpcUrl: FNN_RPC_URL });
+
 // Global cache for payer node ID
 let payerNodeId = "Payer (Self)";
-
-// Decode CKB invoice amount from Bech32 prefix
-function extractAmountFromInvoice(invoice: string): number {
-  const match = invoice.match(/^(fibt|fibd|fib)(\d+)1/i);
-  if (match) {
-    const shannons = parseFloat(match[2]);
-    return shannons / 1e8;
-  }
-  return 0;
-}
 
 // Fetch local Node ID from FNN node_info RPC
 async function fetchPayerNodeId() {
   try {
-    const res = await axios.post(FNN_RPC_URL, {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "node_info",
-      params: []
-    });
-    if (res.data?.result?.node_id) {
-      payerNodeId = res.data.result.node_id;
+    const result = await fnnClient.nodeInfo();
+    if (result?.node_id) {
+      payerNodeId = result.node_id;
       console.log(`[Proxy] Fetched local payer node ID dynamically: ${payerNodeId}`);
     }
   } catch (err: any) {
@@ -47,15 +39,8 @@ async function fetchPayerNodeId() {
 // Decode invoice using FNN decode_invoice RPC to fetch payee pubkey
 async function fetchRecipientNodeId(invoice: string): Promise<string> {
   try {
-    const res = await axios.post(FNN_RPC_URL, {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "decode_invoice",
-      params: [{ invoice }]
-    });
-    if (res.data?.result?.payee_pubkey) {
-      return res.data.result.payee_pubkey;
-    }
+    const result = await fnnClient.decodeInvoice(invoice);
+    if (result?.payee_pubkey) return result.payee_pubkey;
   } catch (err: any) {
     console.warn(`[Proxy] decode_invoice RPC query failed. Fallback: "Recipient". Error: ${err.message}`);
   }
@@ -64,48 +49,14 @@ async function fetchRecipientNodeId(invoice: string): Promise<string> {
 
 // Dynamically construct path hops using the node's channel topology
 async function getDynamicHops(recipientId: string, failingNodeId?: string): Promise<string[]> {
-  const pathList: string[] = [payerNodeId];
-
   try {
-    const res = await axios.post(FNN_RPC_URL, {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "list_channels",
-      params: [{}]
-    });
-
-    const channels = res.data?.result?.channels || [];
-    
-    // 1. Direct channel path
-    const directChannel = channels.find((c: any) => c.pubkey === recipientId);
-    if (directChannel) {
-      pathList.push(recipientId);
-      return pathList;
-    }
-
-    // 2. Intermediate channel path
-    if (channels.length > 0) {
-      const peerId = channels[0].pubkey;
-      pathList.push(peerId);
-
-      // If we have a downstream failing node, place it in the path (e.g. Node C)
-      if (failingNodeId && failingNodeId !== payerNodeId && failingNodeId !== recipientId && failingNodeId !== peerId) {
-        pathList.push(failingNodeId);
-      }
-
-      pathList.push(recipientId);
-      return pathList;
-    }
+    const result = await fnnClient.listChannels({});
+    const channels = result?.channels ?? [];
+    return buildApproximateHops(payerNodeId, recipientId, channels, failingNodeId);
   } catch (err: any) {
     console.warn(`[Proxy] list_channels RPC query failed: ${err.message}`);
+    return buildApproximateHops(payerNodeId, recipientId, [], failingNodeId);
   }
-
-  // 3. Fallback: using the parsed failing node if channels query failed
-  if (failingNodeId && failingNodeId !== payerNodeId && failingNodeId !== recipientId) {
-    pathList.push(failingNodeId);
-  }
-  pathList.push(recipientId);
-  return pathList;
 }
 
 // Background poller for pending payments
@@ -114,20 +65,12 @@ async function startPaymentPoller(paymentHash: string, invoiceAddress: string, a
   const maxAttempts = 45; // 90 seconds total (45 * 2s)
   console.log(`[Poller] Starting background polling for payment hash: ${paymentHash}`);
 
-  // Fetch recipient pubkey dynamically on startup
   const recipientId = await fetchRecipientNodeId(invoiceAddress);
 
   const interval = setInterval(async () => {
     attempts++;
     try {
-      const response = await axios.post(FNN_RPC_URL, {
-        id: 1,
-        jsonrpc: "2.0",
-        method: "get_payment",
-        params: [{ payment_hash: paymentHash }]
-      });
-
-      const payment = response.data?.result;
+      const payment = await fnnClient.getPayment(paymentHash);
       if (!payment) {
         console.warn(`[Poller] get_payment returned no result for ${paymentHash}`);
         return;
@@ -143,7 +86,6 @@ async function startPaymentPoller(paymentHash: string, invoiceAddress: string, a
 
         updatePaymentStatus(paymentHash, "Success", { feeCkb });
 
-        // Build dynamic success path
         const hopsPath = await getDynamicHops(recipientId);
         const successHops = hopsPath.map((nodeId, idx) => ({
           hop_index: idx,
@@ -152,14 +94,12 @@ async function startPaymentPoller(paymentHash: string, invoiceAddress: string, a
         }));
         saveHops(paymentHash, successHops);
 
-        const updated = getPaymentWithHops(paymentHash);
-        broadcastPaymentUpdate(updated);
+        broadcastPaymentAndStats(paymentHash);
         console.log(`[Poller] Payment ${paymentHash} settled successfully.`);
       } else if (status === "Failed") {
         clearInterval(interval);
         const rawError = payment.failed_error || "Unknown background routing failure";
-        
-        // Fetch dynamic path hops
+
         const failingNodeMatch = rawError.match(/failing node:\s*([a-fA-F0-9]+)/i);
         const failingNodeId = failingNodeMatch ? failingNodeMatch[1] : undefined;
         const hopsPath = await getDynamicHops(recipientId, failingNodeId);
@@ -171,7 +111,6 @@ async function startPaymentPoller(paymentHash: string, invoiceAddress: string, a
           diagnosticMsg: diagnostic.suggestion
         });
 
-        // Save failing hops based on dynamic path matching
         const failHops = hopsPath.map((nodeId, idx) => {
           let hopStatus: "Success" | "Failed" | "Untracked" = "Success";
           if (diagnostic.failing_node_pubkey && diagnostic.failing_node_pubkey.toLowerCase() === nodeId.toLowerCase()) {
@@ -184,19 +123,13 @@ async function startPaymentPoller(paymentHash: string, invoiceAddress: string, a
           ) {
             hopStatus = "Untracked";
           } else if (!diagnostic.failing_node_pubkey && diagnostic.failing_hop_index === undefined) {
-            // General failure fallback
             hopStatus = idx === 0 ? "Failed" : "Untracked";
           }
-          return {
-            hop_index: idx,
-            node_pubkey: nodeId,
-            status: hopStatus
-          };
+          return { hop_index: idx, node_pubkey: nodeId, status: hopStatus };
         });
         saveHops(paymentHash, failHops);
 
-        const updated = getPaymentWithHops(paymentHash);
-        broadcastPaymentUpdate(updated);
+        broadcastPaymentAndStats(paymentHash);
         console.log(`[Poller] Payment ${paymentHash} marked as Failed: ${diagnostic.code}`);
       }
     } catch (err: any) {
@@ -212,7 +145,6 @@ async function startPaymentPoller(paymentHash: string, invoiceAddress: string, a
         diagnosticMsg: "The routing engine took too long to find an active path. This indicates downstream channel congestion or that the destination node is currently offline."
       });
 
-      // Save untracked timeout hops dynamically
       const hopsPath = await getDynamicHops(recipientId);
       const timeoutHops = hopsPath.map((nodeId, idx) => ({
         hop_index: idx,
@@ -227,11 +159,64 @@ async function startPaymentPoller(paymentHash: string, invoiceAddress: string, a
   }, 2000);
 }
 
+function broadcastPaymentAndStats(paymentHash: string): void {
+  const updated = getPaymentWithHops(paymentHash);
+  broadcastPaymentUpdate(updated);
+  broadcastRaw("STATS_UPDATE", computePaymentStats(getAllPayments()));
+}
+
 // REST endpoints for the visual dashboard UI
+app.get("/api/stats", (req, res) => {
+  try {
+    res.json(computePaymentStats(getAllPayments()));
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/payments/dry-run", async (req, res) => {
+  const { invoice } = req.body;
+  if (!invoice) return res.status(400).json({ error: "invoice is required" });
+  try {
+    const result = await fnnClient.sendPayment({ invoice, dry_run: true });
+    res.json({ success: true, route: result });
+  } catch (err: any) {
+    const msg: string = err.message ?? String(err);
+    // If FNN does not support dry_run, return a clear 501 rather than crashing
+    if (/unknown field|invalid param|unrecognized/i.test(msg)) {
+      return res.status(501).json({
+        success: false,
+        error: "dry_run is not supported by this FNN version"
+      });
+    }
+    const diagnostic = parseFnnError(msg);
+    res.json({ success: false, error: msg, diagnostic });
+  }
+});
+
+app.post("/api/payments/probe", async (req, res) => {
+  const { invoice } = req.body;
+  if (!invoice) return res.status(400).json({ error: "invoice is required" });
+  try {
+    const probeHash = generateProbeHash();
+    const result = await runProbe(fnnClient, invoice, probeHash);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/nodes", (req, res) => {
+  try {
+    res.json(getAllNodeAliases());
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/payments", (req, res) => {
   try {
-    const list = getAllPayments();
-    res.json(list);
+    res.json(getAllPayments());
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -240,9 +225,7 @@ app.get("/api/payments", (req, res) => {
 app.get("/api/payments/:hash", (req, res) => {
   try {
     const record = getPaymentWithHops(req.params.hash);
-    if (!record) {
-      return res.status(404).json({ error: "Payment not found" });
-    }
+    if (!record) return res.status(404).json({ error: "Payment not found" });
     res.json(record);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -252,24 +235,21 @@ app.get("/api/payments/:hash", (req, res) => {
 // JSON-RPC Interceptor POST route
 app.post("/", async (req, res) => {
   const { method, params, id } = req.body;
-
   console.log(`[RPC Proxy] Intercepted method: ${method}`);
 
   try {
-    // Forward the request to FNN Node
+    // Forward the request directly to FNN (preserve original body)
+    const { default: axios } = await import("axios");
     const fnnResponse = await axios.post(FNN_RPC_URL, req.body);
     const resultData = fnnResponse.data;
 
-    // Intercept send_payment
     if (method === "send_payment" && params && params[0]) {
       const invoiceAddress = params[0].invoice;
-      const amountCkb = extractAmountFromInvoice(invoiceAddress);
+      const amountCkb = extractAmountFromInvoice(invoiceAddress) / 1e8;
 
       if (resultData.error) {
-        // Synchronous send_payment failure (Scenario 1)
         const rawError = resultData.error.message || JSON.stringify(resultData.error);
-        
-        // Dynamically build path hops
+
         const recipientId = await fetchRecipientNodeId(invoiceAddress);
         const failingNodeMatch = rawError.match(/failing node:\s*([a-fA-F0-9]+)/i);
         const failingNodeId = failingNodeMatch ? failingNodeMatch[1] : undefined;
@@ -277,18 +257,13 @@ app.post("/", async (req, res) => {
         const diagnostic = parseFnnError(rawError, hopsPath);
 
         const paymentHash = `error_sync_${Date.now()}`;
-        savePayment({
-          payment_hash: paymentHash,
-          invoice_address: invoiceAddress,
-          amount_ckb: amountCkb
-        });
+        savePayment({ payment_hash: paymentHash, invoice_address: invoiceAddress, amount_ckb: amountCkb });
         updatePaymentStatus(paymentHash, "Failed", {
           errorRaw: rawError,
           errorCode: diagnostic.code,
           diagnosticMsg: diagnostic.suggestion
         });
 
-        // Save failure hops dynamically
         const failHops = hopsPath.map((nodeId, idx) => ({
           hop_index: idx,
           node_pubkey: nodeId,
@@ -296,28 +271,14 @@ app.post("/", async (req, res) => {
         }));
         saveHops(paymentHash, failHops);
 
-        // Enrich the RPC response error payload with diagnostics info
-        resultData.error.data = {
-          diagnostics: diagnostic
-        };
+        resultData.error.data = { diagnostics: diagnostic };
 
-        const updated = getPaymentWithHops(paymentHash);
-        broadcastPaymentUpdate(updated);
+        broadcastPaymentAndStats(paymentHash);
       } else if (resultData.result) {
-        // Asynchronous send_payment accepted (Scenario 2)
         const paymentHash = resultData.result.payment_hash;
-        
-        savePayment({
-          payment_hash: paymentHash,
-          invoice_address: invoiceAddress,
-          amount_ckb: amountCkb
-        });
-
-        // Start background polling
+        savePayment({ payment_hash: paymentHash, invoice_address: invoiceAddress, amount_ckb: amountCkb });
         startPaymentPoller(paymentHash, invoiceAddress, amountCkb);
-
-        const updated = getPaymentWithHops(paymentHash);
-        broadcastPaymentUpdate(updated);
+        broadcastPaymentAndStats(paymentHash);
       }
     }
 
@@ -338,7 +299,6 @@ app.post("/", async (req, res) => {
 // Boot the server
 const server = http.createServer(app);
 
-// Initialize DB and WS Broadcast server
 initDb();
 initWebSocketServer(server);
 
@@ -347,7 +307,12 @@ server.listen(PROXY_PORT, async () => {
   console.log(`🚀 Fiber Route Diagnostics Proxy running on port ${PROXY_PORT}`);
   console.log(`📡 Forwarding to FNN Node at ${FNN_RPC_URL}`);
   console.log(`=======================================================`);
-  
-  // Dynamic payer node identification fetch on start
   await fetchPayerNodeId();
+  await refreshNodeAliases(fnnClient);
+  broadcastRaw("NODE_ALIASES_UPDATED", getAllNodeAliases());
+  // Refresh node aliases every 5 minutes
+  setInterval(async () => {
+    await refreshNodeAliases(fnnClient);
+    broadcastRaw("NODE_ALIASES_UPDATED", getAllNodeAliases());
+  }, 5 * 60 * 1000);
 });

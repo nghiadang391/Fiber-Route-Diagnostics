@@ -39,18 +39,17 @@ export function initWebSocketServer(server: Server) {
   console.log("[WS] WebSocket Server initialized.");
 }
 
-export function broadcastPaymentUpdate(payload: any) {
+export function broadcastRaw(type: string, payload: any): void {
   if (!wss) return;
-
-  const message = JSON.stringify({
-    type: "PAYMENT_UPDATE",
-    payload
-  });
-
-  console.log(`[WS] Broadcasting update for payment: ${payload.payment_hash}`);
+  const message = JSON.stringify({ type, payload });
   for (const client of clients) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(message);
     }
   }
+}
+
+export function broadcastPaymentUpdate(payload: any): void {
+  console.log(`[WS] Broadcasting update for payment: ${payload?.payment_hash}`);
+  broadcastRaw("PAYMENT_UPDATE", payload);
 }

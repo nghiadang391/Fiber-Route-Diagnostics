@@ -465,6 +465,135 @@
       background: rgba(255, 255, 255, 0.08);
       border-color: var(--card-hover-border);
     }
+
+    /* ── Statistics Panel ────────────────────────────────── */
+    .stats-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .stats-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.875rem 1rem;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .stat-value.success { color: var(--success); }
+    .stat-value.error   { color: var(--error); }
+    .stat-value.muted   { color: var(--text-muted); }
+
+    .error-codes-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .error-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 5px;
+      background: var(--error-glow);
+      color: var(--error);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .error-badge-count {
+      opacity: 0.7;
+      margin-left: 0.25rem;
+    }
+
+    /* ── Test Route panel ───────────────────────────────── */
+    .test-route-bar {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .test-route-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .test-route-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text-main);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      outline: none;
+      font-family: 'JetBrains Mono', monospace;
+      transition: border-color 0.2s;
+    }
+
+    .test-route-input:focus {
+      border-color: var(--primary);
+    }
+
+    .test-route-btn {
+      background: var(--primary-glow);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .test-route-btn:hover { background: rgba(139, 92, 246, 0.25); }
+    .test-route-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .sim-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .sim-card.viable { border-color: rgba(16, 185, 129, 0.4); }
+    .sim-card.failed { border-color: rgba(239, 68, 68, 0.3); }
   </style>
 </head>
 <body>
@@ -486,6 +615,13 @@
       <div class="search-bar-container">
         <input type="text" class="search-input" id="search-bar" placeholder="Search by payment hash...">
       </div>
+      <div class="test-route-bar">
+        <input type="text" class="test-route-input" id="test-route-input" placeholder="Paste invoice to test route...">
+        <div class="test-route-actions">
+          <button class="test-route-btn" id="test-route-btn" onclick="runDryRun()" style="flex:1;">Test Route</button>
+          <button class="test-route-btn" id="probe-btn" onclick="runProbe()" style="flex:1;border-color:var(--pending);color:var(--pending);background:var(--pending-glow);">Probe</button>
+        </div>
+      </div>
       <div class="payments-list" id="payments-list">
         <!-- Rendered dynamically -->
       </div>
@@ -493,9 +629,31 @@
 
     <!-- Right Detail Column -->
     <div class="details-panel" id="details-panel">
-      <div class="placeholder-view">
-        <span class="placeholder-icon">🔍</span>
-        <p>Select a payment from the list to view route diagnostics.</p>
+      <!-- Statistics panel — always visible -->
+      <div class="stats-panel" id="stats-panel">
+        <div class="stats-panel-header">
+          <div class="section-title" style="margin-bottom:0;">Network Health Overview</div>
+        </div>
+        <div class="stats-grid" id="stats-grid">
+          <!-- Rendered by renderStatsPanel() -->
+          <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value muted">—</div></div>
+          <div class="stat-card"><div class="stat-label">Success Rate</div><div class="stat-value muted">—</div></div>
+          <div class="stat-card"><div class="stat-label">Failure Rate</div><div class="stat-value muted">—</div></div>
+          <div class="stat-card"><div class="stat-label">Succeeded</div><div class="stat-value muted">—</div></div>
+          <div class="stat-card"><div class="stat-label">Failed</div><div class="stat-value muted">—</div></div>
+          <div class="stat-card"><div class="stat-label">Avg Fee</div><div class="stat-value muted">—</div></div>
+        </div>
+        <div id="error-codes-section" style="display:none;">
+          <div class="stat-label" style="margin-bottom:0.4rem;">Top Error Codes</div>
+          <div class="error-codes-list" id="error-codes-list"></div>
+        </div>
+      </div>
+
+      <div id="payment-detail-view">
+        <div class="placeholder-view">
+          <span class="placeholder-icon">🔍</span>
+          <p>Select a payment from the list to view route diagnostics.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -504,6 +662,173 @@
     let ws;
     let paymentsMap = new Map();
     let activePaymentHash = null;
+    let globalStats = null;
+    let nodeAliases = {};
+
+    function resolveAlias(pubkey) {
+      if (nodeAliases[pubkey]) return nodeAliases[pubkey];
+      return pubkey.length > 12 ? pubkey.slice(0, 8) + '…' : pubkey;
+    }
+
+    function renderStatsPanel() {
+      if (!globalStats) return;
+      const s = globalStats;
+      const pct = v => (v * 100).toFixed(1) + '%';
+      document.getElementById('stats-grid').innerHTML = `
+        <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value muted">${s.total}</div></div>
+        <div class="stat-card"><div class="stat-label">Success Rate</div><div class="stat-value success">${pct(s.successRate)}</div></div>
+        <div class="stat-card"><div class="stat-label">Failure Rate</div><div class="stat-value ${s.failureRate > 0 ? 'error' : 'muted'}">${pct(s.failureRate)}</div></div>
+        <div class="stat-card"><div class="stat-label">Succeeded</div><div class="stat-value success">${s.succeeded}</div></div>
+        <div class="stat-card"><div class="stat-label">Failed</div><div class="stat-value ${s.failed > 0 ? 'error' : 'muted'}">${s.failed}</div></div>
+        <div class="stat-card"><div class="stat-label">Avg Fee</div><div class="stat-value muted">${s.avgFeeCkb ? s.avgFeeCkb.toFixed(6) + ' CKB' : '—'}</div></div>
+      `;
+      const errSection = document.getElementById('error-codes-section');
+      if (s.topErrorCodes && s.topErrorCodes.length > 0) {
+        errSection.style.display = '';
+        document.getElementById('error-codes-list').innerHTML = s.topErrorCodes
+          .slice(0, 6)
+          .map(e => `<span class="error-badge">${e.code}<span class="error-badge-count">×${e.count}</span></span>`)
+          .join('');
+      } else {
+        errSection.style.display = 'none';
+      }
+    }
+
+    async function fetchAndRenderStats() {
+      try {
+        const res = await fetch('/api/stats');
+        if (res.ok) { globalStats = await res.json(); renderStatsPanel(); }
+      } catch (e) { /* proxy not running — stats stay blank */ }
+    }
+
+    async function fetchNodeAliases() {
+      try {
+        const res = await fetch('/api/nodes');
+        if (res.ok) { nodeAliases = await res.json(); }
+      } catch (e) { /* aliases stay empty — raw pubkeys shown */ }
+    }
+
+    async function runDryRun() {
+      const invoice = document.getElementById('test-route-input').value.trim();
+      if (!invoice) return;
+      const btn = document.getElementById('test-route-btn');
+      btn.disabled = true;
+      btn.textContent = 'Testing…';
+
+      // Show result in the detail view
+      const detailsEl = document.getElementById('payment-detail-view');
+      detailsEl.innerHTML = `<div style="color:var(--text-muted);padding:2rem;text-align:center;font-size:0.875rem;">Simulating route…</div>`;
+
+      try {
+        const res = await fetch('/api/payments/dry-run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ invoice })
+        });
+        const data = await res.json();
+        renderSimResult(data, invoice);
+      } catch (e) {
+        detailsEl.innerHTML = `<div style="color:var(--error);padding:2rem;">Could not reach proxy server.</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Test Route';
+      }
+    }
+
+    async function runProbe() {
+      const invoice = document.getElementById('test-route-input').value.trim();
+      if (!invoice) return;
+      const btn = document.getElementById('probe-btn');
+      btn.disabled = true;
+      btn.textContent = 'Probing…';
+
+      const detailsEl = document.getElementById('payment-detail-view');
+      detailsEl.innerHTML = `<div style="color:var(--text-muted);padding:2rem;text-align:center;font-size:0.875rem;">Sending probe payment…</div>`;
+
+      try {
+        const res = await fetch('/api/payments/probe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ invoice })
+        });
+        const data = await res.json();
+        renderProbeResult(data, invoice);
+      } catch (e) {
+        detailsEl.innerHTML = `<div style="color:var(--error);padding:2rem;">Could not reach proxy server.</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Probe';
+      }
+    }
+
+    function renderProbeResult(data, invoice) {
+      const detailsEl = document.getElementById('payment-detail-view');
+      const cls = data.classification;
+      const viable = data.viable;
+      const statusColor = viable ? 'var(--success)' : cls === 'UNKNOWN' ? 'var(--pending)' : 'var(--error)';
+      const statusLabel = cls === 'ROUTE_VIABLE' ? 'ROUTE VIABLE' : cls === 'ROUTE_BLOCKED' ? 'ROUTE BLOCKED' : 'UNKNOWN';
+
+      let html = `
+        <div class="sim-card ${viable ? 'viable' : 'failed'}">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:1rem;font-weight:800;color:${statusColor};">${statusLabel}</span>
+            <span style="font-size:0.75rem;color:var(--text-muted);">Probe Result · ${data.latencyMs}ms</span>
+          </div>
+          <div class="invoice-console">${invoice}</div>
+      `;
+
+      if (!viable && data.errorMessage) {
+        html += `
+          <div>
+            <div class="stat-label" style="margin-bottom:0.4rem;">Error</div>
+            <div class="raw-error-console">${data.errorMessage}</div>
+          </div>
+        `;
+      }
+
+      if (viable) {
+        html += `<div style="font-size:0.875rem;color:var(--success);">Route reached the destination. The recipient rejected the probe hash as expected — the path is clear.</div>`;
+      }
+
+      html += `</div>`;
+      detailsEl.innerHTML = html;
+    }
+
+    function renderSimResult(data, invoice) {
+      const detailsEl = document.getElementById('payment-detail-view');
+      const viable = data.success === true;
+      const statusColor = viable ? 'var(--success)' : 'var(--error)';
+      const statusLabel = viable ? 'ROUTE VIABLE' : 'ROUTE BLOCKED';
+
+      let html = `
+        <div class="sim-card ${viable ? 'viable' : 'failed'}">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:1rem;font-weight:800;color:${statusColor};">${statusLabel}</span>
+            <span style="font-size:0.75rem;color:var(--text-muted);">Route Simulation</span>
+          </div>
+          <div class="invoice-console">${invoice}</div>
+      `;
+
+      if (!viable && data.diagnostic) {
+        const d = data.diagnostic;
+        html += `
+          <div class="diagnostic-card">
+            <div class="diag-title-section">
+              <span class="warning-icon">⚠️</span>
+              <span class="diag-code">DIAGNOSTIC_ERR: ${d.code || 'Unknown'}</span>
+            </div>
+            <div class="diag-suggestion">${d.suggestion || ''}</div>
+          </div>
+        `;
+      }
+
+      if (!viable && data.error && !data.diagnostic) {
+        html += `<div class="raw-error-console">${data.error}</div>`;
+      }
+
+      html += `</div>`;
+      detailsEl.innerHTML = html;
+    }
 
     function formatTime(timestamp) {
       return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -549,6 +874,8 @@
             paymentsMap.clear();
             msg.payload.forEach(p => paymentsMap.set(p.payment_hash, p));
             renderPaymentsList();
+            fetchAndRenderStats();
+            fetchNodeAliases();
           } else if (msg.type === "PAYMENT_UPDATE") {
             const p = msg.payload;
             paymentsMap.set(p.payment_hash, p);
@@ -556,6 +883,13 @@
             if (activePaymentHash === p.payment_hash) {
               renderDetails(p.payment_hash);
             }
+          } else if (msg.type === "STATS_UPDATE") {
+            globalStats = msg.payload;
+            renderStatsPanel();
+          } else if (msg.type === "NODE_ALIASES_UPDATED") {
+            nodeAliases = msg.payload || {};
+            // Re-render active payment detail so hop labels update immediately
+            if (activePaymentHash) renderDetails(activePaymentHash);
           }
         } catch (err) {
           console.error("[WS] Failed to parse message:", err);
@@ -596,7 +930,7 @@
 
     function renderDetails(hash) {
       const p = paymentsMap.get(hash);
-      const detailsEl = document.getElementById("details-panel");
+      const detailsEl = document.getElementById("payment-detail-view");
 
       if (!p) {
         detailsEl.innerHTML = `
@@ -637,12 +971,16 @@
           <div class="route-visualizer">
             <div class="section-title" style="margin-bottom: 0;">Multi-Hop Routing Path</div>
             <div class="hops-chain">
-              ${p.hops.map((hop, i) => `
+              ${p.hops.map((hop, i) => {
+                const alias = resolveAlias(hop.node_pubkey);
+                const label = i === 0 ? 'Payer' : (i === p.hops.length - 1 ? 'Recipient' : 'Hop ' + i);
+                const showAlias = alias !== hop.node_pubkey && alias !== label;
+                return `
                 <div class="hop-node ${hop.status.toLowerCase()}">
-                  <div class="node-circle">${i === 0 ? 'Payer' : (i === p.hops.length - 1 ? 'Recipient' : 'Hop ' + i)}</div>
-                  <div class="node-pubkey" title="${hop.node_pubkey}">${hop.node_pubkey}</div>
-                </div>
-              `).join("")}
+                  <div class="node-circle" title="${hop.node_pubkey}">${showAlias ? alias : label}</div>
+                  <div class="node-pubkey">${hop.node_pubkey.length > 12 ? hop.node_pubkey.slice(0, 10) + '…' : hop.node_pubkey}</div>
+                </div>`;
+              }).join("")}
             </div>
           </div>
         `;
@@ -680,6 +1018,7 @@
 
       detailsEl.innerHTML = detailsHtml;
     }
+
 
     document.getElementById("search-bar").addEventListener("input", renderPaymentsList);
 
