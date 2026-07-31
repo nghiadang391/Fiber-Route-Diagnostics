@@ -68,13 +68,15 @@ Component 2 — Web Dashboard (HTML / JavaScript):
 - Connects to the proxy server via WebSocket for real-time updates
 - Payment Timeline: shows all payments with their status (Pending, Success, Failed) and timestamps
 - Failure Detail View: when a payment fails, shows the parsed error code, human-readable suggestion, and an approximate hop path derived from local channel state
-- Failure Statistics (NOT YET IMPLEMENTED — planned): will aggregate error code frequency over time
+- Failure Statistics panel: always-visible summary of total/succeeded/failed payments, success/failure rate, average fee, and top error codes, updated live via `STATS_UPDATE`
+- Channel Health tab: drained-channel and disconnected-peer warnings alongside the Diagnostics tab
+- Test Route / Probe controls: dry-run route simulation and probe payments, with fee estimates rendered under the result
 
 Component 3 — TypeScript SDK:
 - A thin wrapper class (FiberDiagClient) that developers import into their Node.js applications
 - Provides sendPayment with automatic diagnostics enrichment built in
 - Throws a structured FiberDiagError on failure, with code, suggestion, and raw error fields
-- Provides getAllPayments and getPaymentDetails to query payment history
+- Provides getAllPayments and getPaymentDetails to query payment history, and getStats / testRoute for the newer endpoints
 
 User Flow — Developer Debugging a Failed Payment:
 
