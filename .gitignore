@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+.venv-code-review-graph/
 
 # Compiled files
 dist/
@@ -29,3 +30,12 @@ OPTIONS-*
 # IDEs and OS files
 .DS_Store
 .vscode/
+# Added by code-review-graph
+.code-review-graph/
+
+# Claude Code local config
+.claude/
+.mcp.json
+
+# Local planning doc, not part of shipped project
+IMPLEMENTATION_PLAN.md

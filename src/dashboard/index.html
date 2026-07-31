@@ -594,6 +594,81 @@
 
     .sim-card.viable { border-color: rgba(16, 185, 129, 0.4); }
     .sim-card.failed { border-color: rgba(239, 68, 68, 0.3); }
+
+    /* ─── Phase 3: Channel Health tab ─────────────────────────────────── */
+    .detail-tabs {
+      display: flex;
+      gap: 0.25rem;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 1rem;
+    }
+    .detail-tab {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .detail-tab:hover { color: var(--text-main); }
+    .detail-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .drained-banner {
+      background: var(--error-glow);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--error);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+    .channel-row {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .channel-row-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .channel-peer { color: var(--text-muted); font-family: monospace; }
+    .balance-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .balance-bar-fill { height: 100%; border-radius: 4px; }
+    .balance-bar-fill.healthy { background: var(--success); }
+    .balance-bar-fill.drained { background: var(--error); }
+    .channel-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+    }
+    .channel-badge.healthy { background: var(--success-glow); color: var(--success); }
+    .channel-badge.drained { background: var(--error-glow); color: var(--error); }
+
+    /* ─── Phase 4: Peer Status sub-section ────────────────────────────── */
+    .peer-status-section {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--card-border);
+    }
+    .channel-badge.disconnected { background: var(--error-glow); color: var(--error); }
+    .channel-badge.connected { background: var(--success-glow); color: var(--success); }
   </style>
 </head>
 <body>
@@ -649,10 +724,23 @@
         </div>
       </div>
 
+      <!-- Tab switcher: Diagnostics | Channel Health -->
+      <div class="detail-tabs">
+        <button class="detail-tab active" id="tab-diagnostics" onclick="switchTab('diagnostics')">Diagnostics</button>
+        <button class="detail-tab" id="tab-channels" onclick="switchTab('channels')">Channel Health</button>
+      </div>
+
       <div id="payment-detail-view">
         <div class="placeholder-view">
           <span class="placeholder-icon">🔍</span>
           <p>Select a payment from the list to view route diagnostics.</p>
+        </div>
+      </div>
+
+      <div id="channel-health-view" style="display:none;">
+        <div class="placeholder-view">
+          <span class="placeholder-icon">📡</span>
+          <p>Loading channel balances…</p>
         </div>
       </div>
     </div>
@@ -668,6 +756,113 @@
     function resolveAlias(pubkey) {
       if (nodeAliases[pubkey]) return nodeAliases[pubkey];
       return pubkey.length > 12 ? pubkey.slice(0, 8) + '…' : pubkey;
+    }
+
+    // ─── Phase 3: Channel Health tab ─────────────────────────────────────
+    let activeTab = 'diagnostics';
+    let latestChannelSnapshots = [];
+    let latestDrainedAlerts = [];
+    let latestPeerHealth = [];
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.getElementById('tab-diagnostics').classList.toggle('active', tab === 'diagnostics');
+      document.getElementById('tab-channels').classList.toggle('active', tab === 'channels');
+      document.getElementById('payment-detail-view').style.display = tab === 'diagnostics' ? '' : 'none';
+      document.getElementById('channel-health-view').style.display = tab === 'channels' ? '' : 'none';
+      if (tab === 'channels') fetchAndRenderChannelHealth();
+    }
+
+    async function fetchAndRenderChannelHealth() {
+      try {
+        const [snapsRes, alertsRes, peersRes] = await Promise.all([
+          fetch('/api/channels/snapshots'),
+          fetch('/api/channels/alerts'),
+          fetch('/api/peers/health'),
+        ]);
+        latestChannelSnapshots = snapsRes.ok ? await snapsRes.json() : [];
+        latestDrainedAlerts = alertsRes.ok ? await alertsRes.json() : [];
+        latestPeerHealth = peersRes.ok ? await peersRes.json() : [];
+        renderChannelHealth();
+      } catch (err) {
+        console.error('[ChannelHealth] Failed to load channel data:', err);
+      }
+    }
+
+    function renderPeerStatus() {
+      if (latestPeerHealth.length === 0) {
+        return `
+          <div class="peer-status-section">
+            <div class="section-title" style="margin-bottom:0.5rem;">Peer Status</div>
+            <div style="font-size:0.8rem;color:var(--text-muted);">All peers connected.</div>
+          </div>
+        `;
+      }
+      return `
+        <div class="peer-status-section">
+          <div class="section-title" style="margin-bottom:0.5rem;">Peer Status</div>
+          ${latestPeerHealth.map(d => `
+            <div class="channel-row">
+              <div class="channel-row-head" style="margin-bottom:0;">
+                <span class="channel-peer">${resolveAlias(d.peer_id)}</span>
+                <span class="channel-badge disconnected">DISCONNECTED</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderChannelHealth() {
+      const el = document.getElementById('channel-health-view');
+      // Keep only the most recent snapshot per channel_outpoint.
+      const latestByOutpoint = new Map();
+      for (const s of latestChannelSnapshots) {
+        const existing = latestByOutpoint.get(s.channel_outpoint);
+        if (!existing || s.sampled_at > existing.sampled_at) {
+          latestByOutpoint.set(s.channel_outpoint, s);
+        }
+      }
+      const channels = Array.from(latestByOutpoint.values());
+      const drainedOutpoints = new Set(latestDrainedAlerts.map(d => d.channel_outpoint));
+
+      if (channels.length === 0) {
+        el.innerHTML = `
+          <div class="placeholder-view">
+            <span class="placeholder-icon">📡</span>
+            <p>No channel snapshots yet. The monitor polls every 60s.</p>
+          </div>
+        ` + renderPeerStatus();
+        return;
+      }
+
+      let html = '';
+      if (latestDrainedAlerts.length > 0) {
+        html += `<div class="drained-banner">⚠ ${latestDrainedAlerts.length} channel(s) below the healthy liquidity threshold.</div>`;
+      }
+
+      html += channels.map(c => {
+        const ratio = c.capacity_shannons > 0 ? c.local_balance_shannons / c.capacity_shannons : 0;
+        const isDrained = drainedOutpoints.has(c.channel_outpoint);
+        return `
+          <div class="channel-row">
+            <div class="channel-row-head">
+              <span class="channel-peer">${resolveAlias(c.peer_id)}</span>
+              <span class="channel-badge ${isDrained ? 'drained' : 'healthy'}">${isDrained ? 'DRAINED' : 'HEALTHY'}</span>
+            </div>
+            <div class="balance-bar">
+              <div class="balance-bar-fill ${isDrained ? 'drained' : 'healthy'}" style="width:${Math.min(ratio * 100, 100)}%;"></div>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.35rem;">
+              ${(ratio * 100).toFixed(1)}% local liquidity
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      html += renderPeerStatus();
+
+      el.innerHTML = html;
     }
 
     function renderStatsPanel() {
@@ -827,7 +1022,33 @@
       }
 
       html += `</div>`;
+
+      if (data.feeEstimate && data.feeEstimate.length > 0) {
+        html += renderFeeEstimateCard(data.feeEstimate);
+      }
+
       detailsEl.innerHTML = html;
+    }
+
+    function renderFeeEstimateCard(estimates) {
+      const rows = estimates.map((e, i) => {
+        const feeCkb = (e.total_fee_shannons / 1e8).toFixed(8);
+        const badgeColor = e.confidence === 'graph_data' ? 'var(--success)' : 'var(--pending)';
+        return `
+          <div class="summary-card" style="margin-bottom:0.5rem;">
+            <div class="section-title" style="margin-bottom:0;">Route ${i + 1} · ${e.route.length} hop(s)</div>
+            <div class="summary-val">${feeCkb} CKB</div>
+            <div style="font-size:0.7rem;color:${badgeColor};font-weight:600;text-transform:uppercase;">${e.confidence}</div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="route-visualizer">
+          <div class="section-title" style="margin-bottom:0;">Fee Estimate</div>
+          ${rows}
+        </div>
+      `;
     }
 
     function formatTime(timestamp) {
@@ -890,6 +1111,12 @@
             nodeAliases = msg.payload || {};
             // Re-render active payment detail so hop labels update immediately
             if (activePaymentHash) renderDetails(activePaymentHash);
+          } else if (msg.type === "CHANNEL_ALERT") {
+            latestDrainedAlerts = msg.payload || [];
+            if (activeTab === 'channels') renderChannelHealth();
+          } else if (msg.type === "PEER_HEALTH_UPDATE") {
+            latestPeerHealth = msg.payload || [];
+            if (activeTab === 'channels') renderChannelHealth();
           }
         } catch (err) {
           console.error("[WS] Failed to parse message:", err);

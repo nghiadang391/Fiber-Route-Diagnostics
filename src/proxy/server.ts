@@ -2,14 +2,17 @@ import express from "express";
 import http from "http";
 import path from "path";
 import { initDb, savePayment, updatePaymentStatus, saveHops, getPaymentWithHops, getAllPayments } from "./db";
+import { getChannelSnapshots, getLatestSnapshots, pruneChannelSnapshots } from "./db";
 import { initWebSocketServer, broadcastPaymentUpdate, broadcastRaw } from "./ws";
 import { computePaymentStats } from "./stats";
 import { parseFnnError } from "./parser";
 import { createFnnClient } from "./fnnClient";
-import { extractAmountFromInvoice, buildApproximateHops } from "./routing";
+import { extractAmountFromInvoice, buildApproximateHops, findDrainedChannels, findDisconnectedChannels } from "./routing";
 import { refreshNodeAliases } from "./nodeRegistry";
 import { getAllNodeAliases } from "./db";
 import { generateProbeHash, runProbe } from "./prober";
+import { startChannelMonitor, DEFAULT_DRAIN_THRESHOLD_PCT } from "./channelMonitor";
+import { estimateRouteFees, getCandidateRoutes } from "./feeSimulator";
 
 const app = express();
 app.use(express.json());
@@ -57,6 +60,24 @@ async function getDynamicHops(recipientId: string, failingNodeId?: string): Prom
     console.warn(`[Proxy] list_channels RPC query failed: ${err.message}`);
     return buildApproximateHops(payerNodeId, recipientId, [], failingNodeId);
   }
+}
+
+// Estimate routing fees for an invoice: resolve recipient + amount, find
+// candidate routes, then score each with estimateRouteFees.
+async function estimateFeesForInvoice(invoiceAddress: string) {
+  const recipientId = await fetchRecipientNodeId(invoiceAddress);
+  const amountShannons = extractAmountFromInvoice(invoiceAddress);
+  const routes = await getCandidateRoutes(fnnClient, payerNodeId, recipientId, 3);
+
+  let graphChannels: import("./fnnClient").GraphChannelInfo[] = [];
+  try {
+    const graphResult = await fnnClient.graphChannels();
+    graphChannels = graphResult?.channels ?? [];
+  } catch {
+    // graph_channels unsupported/unreachable — estimateRouteFees will mark approximated
+  }
+
+  return estimateRouteFees(routes, graphChannels, amountShannons);
 }
 
 // Background poller for pending payments
@@ -179,7 +200,8 @@ app.post("/api/payments/dry-run", async (req, res) => {
   if (!invoice) return res.status(400).json({ error: "invoice is required" });
   try {
     const result = await fnnClient.sendPayment({ invoice, dry_run: true });
-    res.json({ success: true, route: result });
+    const feeEstimate = await estimateFeesForInvoice(invoice);
+    res.json({ success: true, route: result, feeEstimate });
   } catch (err: any) {
     const msg: string = err.message ?? String(err);
     // If FNN does not support dry_run, return a clear 501 rather than crashing
@@ -194,6 +216,17 @@ app.post("/api/payments/dry-run", async (req, res) => {
   }
 });
 
+app.post("/api/payments/estimate-fees", async (req, res) => {
+  const { invoice } = req.body;
+  if (!invoice) return res.status(400).json({ error: "invoice is required" });
+  try {
+    const estimates = await estimateFeesForInvoice(invoice);
+    res.json({ success: true, estimates });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.post("/api/payments/probe", async (req, res) => {
   const { invoice } = req.body;
   if (!invoice) return res.status(400).json({ error: "invoice is required" });
@@ -201,6 +234,37 @@ app.post("/api/payments/probe", async (req, res) => {
     const probeHash = generateProbeHash();
     const result = await runProbe(fnnClient, invoice, probeHash);
     res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/channels/snapshots", (req, res) => {
+  try {
+    const outpoint = typeof req.query.outpoint === "string" ? req.query.outpoint : undefined;
+    res.json(getChannelSnapshots(outpoint));
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/channels/alerts", (req, res) => {
+  try {
+    res.json(findDrainedChannels(getLatestSnapshots(), DEFAULT_DRAIN_THRESHOLD_PCT));
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/peers/health", async (req, res) => {
+  try {
+    const [peersResult, channelsResult] = await Promise.all([
+      fnnClient.listPeers(),
+      fnnClient.listChannels({}),
+    ]);
+    const peers = peersResult?.peers ?? [];
+    const channels = channelsResult?.channels ?? [];
+    res.json(findDisconnectedChannels(channels, peers));
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -315,4 +379,11 @@ server.listen(PROXY_PORT, async () => {
     await refreshNodeAliases(fnnClient);
     broadcastRaw("NODE_ALIASES_UPDATED", getAllNodeAliases());
   }, 5 * 60 * 1000);
+
+  // Channel balance monitor: poll every 60s, broadcast CHANNEL_ALERT on drained channels.
+  startChannelMonitor(fnnClient, broadcastRaw);
+
+  // Prune channel snapshots older than 24h, hourly, to bound DB growth.
+  const SNAPSHOT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+  setInterval(() => pruneChannelSnapshots(SNAPSHOT_MAX_AGE_MS), 60 * 60 * 1000);
 });
