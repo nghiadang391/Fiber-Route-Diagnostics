@@ -36,6 +36,7 @@ OPTIONS-*
 # Claude Code local config
 .claude/
 .mcp.json
+CLAUDE.md
 
 # Local planning doc, not part of shipped project
 IMPLEMENTATION_PLAN.md
