@@ -312,7 +312,7 @@ async function run() {
     try { spawnedProcesses[2].kill("SIGINT"); } catch { }
 
     console.log("[C.5] ✅ Node D killed. The proxy background poller will detect HoldTlcTimeout.");
-    console.log("       → Dashboard at http://localhost:9228 will update automatically (~90s).");
+    console.log("       → Dashboard at http://localhost:9227 will update automatically (~90s).");
   } catch (err) {
     console.error("[C] ❌ Scenario C failed:", err.message);
   }
@@ -359,7 +359,7 @@ async function run() {
   console.log("\n");
   console.log("=".repeat(70));
   console.log("✅ All synchronous error scenarios complete!");
-  console.log(`📊 Dashboard: http://localhost:9228`);
+  console.log(`📊 Dashboard: http://localhost:9227`);
   console.log("   Note: Scenario C (HoldTlcTimeout) resolves in ~90s on the dashboard.");
   console.log("=".repeat(70));
   console.log("\nPress Ctrl+C to shut down nodes.\n");

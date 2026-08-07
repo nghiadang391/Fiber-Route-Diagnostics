@@ -49,12 +49,22 @@ export interface GraphNodeInfo {
   [key: string]: any;
 }
 
+export interface GraphChannelUpdateInfo {
+  fee_rate?: string;
+  enabled?: boolean;
+  tlc_expiry_delta?: string;
+  tlc_minimum_value?: string;
+  [key: string]: any;
+}
+
 export interface GraphChannelInfo {
   channel_outpoint: string;
   node1: string;
   node2: string;
   capacity?: string;
-  node1_fee_rate?: string;  // field names unverified — confirm before Phase 9
+  update_info_of_node1?: GraphChannelUpdateInfo;
+  update_info_of_node2?: GraphChannelUpdateInfo;
+  node1_fee_rate?: string;  // backward-compatible fallback
   node2_fee_rate?: string;
   [key: string]: any;
 }

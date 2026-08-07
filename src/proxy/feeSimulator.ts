@@ -47,7 +47,9 @@ export function estimateRouteFees(
 
       if (ch) {
         outpoints.push(ch.channel_outpoint);
-        const rate = ch.node1 === from ? parseFeeRate(ch.node1_fee_rate) : parseFeeRate(ch.node2_fee_rate);
+        const node1Rate = ch.update_info_of_node1?.fee_rate ?? ch.node1_fee_rate;
+        const node2Rate = ch.update_info_of_node2?.fee_rate ?? ch.node2_fee_rate;
+        const rate = ch.node1 === from ? parseFeeRate(node1Rate) : parseFeeRate(node2Rate);
         totalFee += Math.round((amountShannons * rate) / 1_000_000);
       } else {
         outpoints.push("");

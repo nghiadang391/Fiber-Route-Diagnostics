@@ -38,7 +38,9 @@ export function classifyProbeResult(errorMessage: string): ProbeClassification {
     msg.includes("incorrectunknownpaymentdetails") ||
     msg.includes("incorrect_or_unknown_payment_details") ||
     msg.includes("unknown payment hash") ||
-    msg.includes("incorrect payment details")
+    msg.includes("incorrect payment details") ||
+    msg.includes("payment_hash does not match") ||
+    msg.includes("payment hash does not match")
   ) {
     return "ROUTE_VIABLE";
   }
